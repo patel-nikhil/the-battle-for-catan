@@ -24,6 +24,7 @@ class Player():
     
     def add_vertex(self, position):
         self.vertices.append(position)
+        board.vertices[position].owner = self.color
         for resource in board.vertices[position].resources:
             self.resources.append(resource)
         if board.vertices[position].port is not None:
@@ -91,7 +92,7 @@ class Vertex:
 
     def add_port(self, port):
         self.port = port
-    
+
     def build(self, color):
         self.owner = color
 
@@ -107,8 +108,15 @@ class Vertex:
         rvalue = 0
         avalue = 0
         pvalue = 0
-        lvalue = 0
+        lvalue = 1
         
+        if self.owner is not None:
+            return (0, 0, 0, 0, 1)
+        
+        for adj in self.connections:
+            if adj[0].owner is not None:
+                return (0, 0, 0, 0, 1)
+
         for resource in self.resources:
             if resource not in players[color].resources:
                 rvalue += 1
@@ -127,8 +135,8 @@ class Vertex:
 
         if secondturn == True:
             for resource in islice(Terrain, 0, 4):
-                if resource not in list(players[color].resources + self):
-                    lvalue += 1
+                if resource not in list(players[color].resources + self.resources):
+                    lvalue += 0.03
 
         return (dvalue, rvalue, avalue, pvalue, lvalue)
         
@@ -216,18 +224,18 @@ def construct_vertices(tiles, ports):
     board.vertices.append(Vertex(46, (tiles[18],), ports[4]))
 
 
-    board.vertices.append(Vertex(46, (tiles[16],), ports[6]))
     board.vertices.append(Vertex(47, (tiles[16],), ports[6]))
-    board.vertices.append(Vertex(48, (tiles[16], tiles[17])))
-    board.vertices.append(Vertex(49, (tiles[17],), ports[5]))
-    board.vertices.append(Vertex(50, (tiles[17], tiles[18]), ports[5]))
-    board.vertices.append(Vertex(51, (tiles[18],)))
+    board.vertices.append(Vertex(48, (tiles[16],), ports[6]))
+    board.vertices.append(Vertex(49, (tiles[16], tiles[17])))
+    board.vertices.append(Vertex(50, (tiles[17],), ports[5]))
+    board.vertices.append(Vertex(51, (tiles[17], tiles[18]), ports[5]))
     board.vertices.append(Vertex(52, (tiles[18],)))
+    board.vertices.append(Vertex(53, (tiles[18],)))
 
 def append(first, second):
     global board
-    board.vertices[first].connections.append((second, None))
-    board.vertices[second].connections.append((first, None))
+    board.vertices[first].connections.append((board.vertices[second], None))
+    board.vertices[second].connections.append((board.vertices[first], None))
 
 def construct_edges():
     global board
@@ -308,6 +316,7 @@ def construct_edges():
     append(49,50)
     append(50,51)
     append(51,52)
+    append(52,53)
 
 def construct_board(tiles, ports):
     global board

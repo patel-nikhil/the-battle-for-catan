@@ -1,3 +1,4 @@
+import os
 from board import *
 
 
@@ -132,7 +133,27 @@ def read_layout(filename):
 
     return (tiles, ports)
 
+
+def evaluate(color, secondturn=False):
+    score = []
+    for i in range(54):
+        pts = board.vertices[i].value(color, secondturn)
+        # value = pts[0]/36.0 * sum(pts[1:-1]) - pts[0]/36.0 * pts[-1] ** 0.75
+        value = (pts[0]/36.0 * sum(pts[1:-1]))/pts[-1]
+        score.append((i, value, pts))
+        
+    score.sort(key=lambda x: x[1], reverse=True)
+    with open('scoring.txt', 'a+') as out:
+        for each in score[:3]:
+            out.write(str(each))
+            out.write(os.linesep)
+            print(each)
+        out.write(os.linesep)
+    return score
+
+
 if __name__ == "__main__":
+    turn_order = ['RED', 'BLUE', 'WHITE']
     #tiles = set_layout()
     tiles, ports = read_layout("layout.txt")
     
@@ -141,13 +162,16 @@ if __name__ == "__main__":
 
     board = construct_board(tiles, ports)
 
-    score = []
-    for i in range(52):
-        pts = board.vertices[i].value('RED')
-        value = pts[0]/36.0 * sum(pts[1:])
-        score.append((i, value, pts))
+    score = evaluate('RED')
+    players['RED'].add_vertex(score[0][0])
+    score = evaluate('BLUE')
+    players['BLUE'].add_vertex(score[0][0])
+    score = evaluate('WHITE')
+    players['WHITE'].add_vertex(score[0][0])
 
-    score.sort(key=lambda x: x[1], reverse=True)
-
-    for each in score:
-        print(each)
+    score = evaluate('WHITE', True)
+    players['WHITE'].add_vertex(score[0][0])
+    score = evaluate('BLUE', True)
+    players['BLUE'].add_vertex(score[0][0])
+    score = evaluate('RED', True)
+    players['RED'].add_vertex(score[0][0])
