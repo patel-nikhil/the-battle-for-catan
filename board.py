@@ -24,10 +24,10 @@ class Player():
     
     def add_vertex(self, position):
         self.vertices.append(position)
-        for resource in board.features[position].resources:
+        for resource in board.vertices[position].resources:
             self.resources.append(resource)
-        if board.features[position].port is not None:
-            self.port_resources.append(board.features[position].port.resource)
+        if board.vertices[position].port is not None:
+            self.port_resources.append(board.vertices[position].port.resource)
 
 players = {
     'RED' : Player(Color.RED,),
