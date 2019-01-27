@@ -61,6 +61,7 @@ class Port:
 class Vertex:
     
     def __init__(self, position, resources, rolls, port=None):
+        self.owner = None
         self.position = position
         self.resources = resources
         self.paydays = rolls
@@ -78,11 +79,11 @@ class Vertex:
     def add_port(self, port):
         self.port = port
     
-    def setColor(self, color):
-        self.color = None
+    def build(self, color):
+        self.owner = color
 
     def reset(self):
-        self.color = None
+        self.owner = None
     
     # Factor in potential riskiness of having settlements on same number/resource
     def value(self, color, secondturn=False):
