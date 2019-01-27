@@ -93,6 +93,7 @@ def set_layout():
 
 def read_layout(filename):
     tiles = [None] * num_tiles
+    ports = [None] * num_ports
     remaining_rolls = [7, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12]
     remaining_tiles = [Terrain.ORE, Terrain.ORE, Terrain.ORE, 
         Terrain.BRICK, Terrain.BRICK, Terrain.BRICK,
@@ -100,10 +101,12 @@ def read_layout(filename):
         Terrain.WOOD, Terrain.WOOD, Terrain.WOOD, Terrain.WOOD,
         Terrain.SHEEPS, Terrain.SHEEPS, Terrain.SHEEPS, Terrain.SHEEPS,
         Terrain.NONE]
+    remaining_ports = [Terrain.ORE, Terrain.SHEEPS, Terrain.BRICK, Terrain.WHEAT, Terrain.WOOD, 
+        Terrain.ANY, Terrain.ANY, Terrain.ANY, Terrain.ANY]
 
     with open(filename, 'r') as f:
         data = f.readlines()
-        for i in range(len(data)):
+        for i in range(num_tiles):
             info = data[i].split(',')
             try:
                 resource = Terrain(info[0])
@@ -115,17 +118,28 @@ def read_layout(filename):
                 tiles[i] = Tile(resource, roll) 
             except:
                 return None
+        
+        for i in range(num_tiles + 1, num_ports + 1):
+            info = data[i].split(',')
+            try:
+                resource = Terrain(info)
+                if resource not in remaining_ports:
+                    return None
+                remaining_ports.remove(resource)
+                ports[i - num_tiles] = Port(resource)
+            except:
+                return None
 
-    return tiles
+    return (tiles, ports)
 
 if __name__ == "__main__":
     #tiles = set_layout()
-    tiles = read_layout("layout.txt")
+    tiles, ports = read_layout("layout.txt")
     
     if tiles is None:
         raise Exception("Invalid layout")
 
-    board = construct_board(tiles)
+    board = construct_board(tiles, ports)
 
     score = []
     for i in range(52):

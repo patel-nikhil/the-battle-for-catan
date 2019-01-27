@@ -59,12 +59,13 @@ c_devcard = ((Terrain.ORE, 1,), (Terrain.WHEAT, 1,), (Terrain.SHEEPS, 1))
 c_road = ((Terrain.WOOD, 1,), (Terrain.BRICK, 1))
 
 num_tiles = 19
+num_ports = 9
 
 class Port:
 
-    def __init__(self, resource, ratio):
+    def __init__(self, resource):
         self.resource = resource
-        self.amount = ratio
+        self.amount = (3 if resource == Terrain.ANY else 2)
 
 class Vertex:
     
@@ -157,16 +158,16 @@ class Board:
 
 board = Board()
 
-def construct_vertices(tiles):
+def construct_vertices(tiles, ports):
     global board
-    board.vertices.append(Vertex(0, (tiles[0],), Port(Terrain.ANY, 3)))
-    board.vertices.append(Vertex(1, (tiles[0],), Port(Terrain.ANY, 3)))
+    board.vertices.append(Vertex(0, (tiles[0],), ports[0]))
+    board.vertices.append(Vertex(1, (tiles[0],), ports[0]))
     board.vertices.append(Vertex(2, (tiles[0], tiles[1])))
-    board.vertices.append(Vertex(3, (tiles[1],), Port(Terrain.WHEAT, 2)))
-    board.vertices.append(Vertex(4, (tiles[1], tiles[2]), Port(Terrain.WHEAT, 2)))
+    board.vertices.append(Vertex(3, (tiles[1],), ports[1]))
+    board.vertices.append(Vertex(4, (tiles[1], tiles[2]), ports[1]))
     board.vertices.append(Vertex(5, (tiles[2],)))
     board.vertices.append(Vertex(6, (tiles[2],)))
-    board.vertices.append(Vertex(7, (tiles[3],), Port(Terrain.WOOD, 2)))
+    board.vertices.append(Vertex(7, (tiles[3],), ports[8]))
     board.vertices.append(Vertex(8, (tiles[0], tiles[3])))
     board.vertices.append(Vertex(9, (tiles[0], tiles[4], tiles[3])))
     board.vertices.append(Vertex(10, (tiles[0], tiles[1], tiles[4])))
@@ -174,11 +175,11 @@ def construct_vertices(tiles):
     board.vertices.append(Vertex(11, (tiles[1], tiles[4], tiles[5])))
     board.vertices.append(Vertex(12, (tiles[1], tiles[5], tiles[2])))
     board.vertices.append(Vertex(13, (tiles[5], tiles[2], tiles[6])))
-    board.vertices.append(Vertex(14, (tiles[2], tiles[6]), Port(Terrain.ORE, 2)))
-    board.vertices.append(Vertex(15, (tiles[0],), Port(Terrain.ORE, 2)))
+    board.vertices.append(Vertex(14, (tiles[2], tiles[6]), ports[2]))
+    board.vertices.append(Vertex(15, (tiles[0],), ports[2]))
 
     board.vertices.append(Vertex(16, (tiles[7],)))
-    board.vertices.append(Vertex(17, (tiles[7], tiles[3]), Port(Terrain.WOOD, 2)))
+    board.vertices.append(Vertex(17, (tiles[7], tiles[3]), ports[8]))
     board.vertices.append(Vertex(18, (tiles[7], tiles[3], tiles[8])))
     board.vertices.append(Vertex(19, (tiles[3], tiles[8], tiles[4])))
     board.vertices.append(Vertex(20, (tiles[8], tiles[4], tiles[9])))
@@ -187,12 +188,12 @@ def construct_vertices(tiles):
     board.vertices.append(Vertex(23, (tiles[5], tiles[10], tiles[6])))
     board.vertices.append(Vertex(24, (tiles[10], tiles[6], tiles[11])))
     board.vertices.append(Vertex(25, (tiles[6], tiles[11])))
-    board.vertices.append(Vertex(26, (tiles[11],), Port(Terrain.ANY, 3)))
+    board.vertices.append(Vertex(26, (tiles[11],), ports[3]))
 
 
 
     board.vertices.append(Vertex(27, (tiles[7],)))
-    board.vertices.append(Vertex(28, (tiles[7], tiles[12]), Port(Terrain.BRICK, 2)))
+    board.vertices.append(Vertex(28, (tiles[7], tiles[12]), ports[7]))
     board.vertices.append(Vertex(29, (tiles[7], tiles[12], tiles[8])))
     board.vertices.append(Vertex(30, (tiles[12], tiles[8], tiles[13])))
     board.vertices.append(Vertex(31, (tiles[12], tiles[13], tiles[9])))
@@ -201,25 +202,25 @@ def construct_vertices(tiles):
     board.vertices.append(Vertex(34, (tiles[14], tiles[10], tiles[15])))
     board.vertices.append(Vertex(35, (tiles[10], tiles[11], tiles[15])))
     board.vertices.append(Vertex(36, (tiles[15], tiles[11])))
-    board.vertices.append(Vertex(37, (tiles[11],), Port(Terrain.ORE, 2)))
+    board.vertices.append(Vertex(37, (tiles[11],), ports[3]))
 
 
-    board.vertices.append(Vertex(38, (tiles[12],), Port(Terrain.WOOD, 2)))
+    board.vertices.append(Vertex(38, (tiles[12],), ports[8]))
     board.vertices.append(Vertex(39, (tiles[12], tiles[16])))
     board.vertices.append(Vertex(40, (tiles[12], tiles[16], tiles[13])))
     board.vertices.append(Vertex(41, (tiles[16], tiles[13], tiles[17])))
     board.vertices.append(Vertex(42, (tiles[13], tiles[17], tiles[14])))
     board.vertices.append(Vertex(43, (tiles[17], tiles[14], tiles[18])))
     board.vertices.append(Vertex(44, (tiles[14], tiles[18], tiles[15])))
-    board.vertices.append(Vertex(45, (tiles[18], tiles[15]), Port(Terrain.SHEEPS, 2)))
-    board.vertices.append(Vertex(46, (tiles[18],), Port(Terrain.SHEEPS, 2)))
+    board.vertices.append(Vertex(45, (tiles[18], tiles[15]), ports[4]))
+    board.vertices.append(Vertex(46, (tiles[18],), ports[4]))
 
 
-    board.vertices.append(Vertex(46, (tiles[16],), Port(Terrain.ANY, 3)))
-    board.vertices.append(Vertex(47, (tiles[16],), Port(Terrain.ANY, 3)))
+    board.vertices.append(Vertex(46, (tiles[16],), ports[6]))
+    board.vertices.append(Vertex(47, (tiles[16],), ports[6]))
     board.vertices.append(Vertex(48, (tiles[16], tiles[17])))
-    board.vertices.append(Vertex(49, (tiles[17],), Port(Terrain.ANY, 3)))
-    board.vertices.append(Vertex(50, (tiles[17], tiles[18]), Port(Terrain.ANY, 3)))
+    board.vertices.append(Vertex(49, (tiles[17],), ports[5]))
+    board.vertices.append(Vertex(50, (tiles[17], tiles[18]), ports[5]))
     board.vertices.append(Vertex(51, (tiles[18],)))
     board.vertices.append(Vertex(52, (tiles[18],)))
 
@@ -308,12 +309,8 @@ def construct_edges():
     append(50,51)
     append(51,52)
 
-def construct_board(tiles=None):
+def construct_board(tiles, ports):
     global board
-    construct_vertices(tiles)
+    construct_vertices(tiles, ports)
     construct_edges()
     return board
-
-if __name__ == "__main__":
-    construct_board()
-    print(board)
