@@ -157,76 +157,6 @@ class Board:
 
 board = Board()
 
-
-def default_tiles():
-    global board
-    board.vertices.append(Vertex(0, (Terrain.ORE,), (10,), Port(Terrain.ANY, 3)))
-    board.vertices.append(Vertex(1, (Terrain.ORE,), (10,), Port(Terrain.ANY, 3)))
-    board.vertices.append(Vertex(2, (Terrain.ORE, Terrain.SHEEPS,), (10,)))
-    board.vertices.append(Vertex(3, (Terrain.SHEEPS,), (2,), Port(Terrain.WHEAT, 2)))
-    board.vertices.append(Vertex(4, (Terrain.SHEEPS, Terrain.WOOD,), (2, 9,), Port(Terrain.WHEAT, 2)))
-    board.vertices.append(Vertex(5, (Terrain.WOOD,), (9,)))
-    board.vertices.append(Vertex(6, (Terrain.WOOD,), (9,)))
-    board.vertices.append(Vertex(7, (Terrain.WHEAT,), (12,), Port(Terrain.WOOD, 2)))
-    board.vertices.append(Vertex(8, (Terrain.ORE, Terrain.WHEAT,), (10, 12)))
-    board.vertices.append(Vertex(9, (Terrain.ORE, Terrain.BRICK, Terrain.WHEAT,), (10, 6, 12)))
-    board.vertices.append(Vertex(10, (Terrain.ORE, Terrain.SHEEPS, Terrain.BRICK,), (10, 2, 6)))
-
-    board.vertices.append(Vertex(11, (Terrain.SHEEPS, Terrain.BRICK, Terrain.SHEEPS,), (2, 6, 4)))
-    board.vertices.append(Vertex(12, (Terrain.SHEEPS, Terrain.SHEEPS, Terrain.WOOD,), (2, 4, 9)))
-    board.vertices.append(Vertex(13, (Terrain.SHEEPS, Terrain.WOOD, Terrain.BRICK,), (4, 9, 10)))
-    board.vertices.append(Vertex(14, (Terrain.WOOD, Terrain.BRICK,), (9, 10,), Port(Terrain.ORE, 2)))
-    board.vertices.append(Vertex(15, (Terrain.BRICK,), (10,), Port(Terrain.ORE, 2)))
-
-    board.vertices.append(Vertex(16, (Terrain.WHEAT,), (9,), Port(Terrain.ORE, 2)))
-    board.vertices.append(Vertex(17, (Terrain.WHEAT, Terrain.WHEAT,), (9, 12,), Port(Terrain.WOOD, 2)))
-    board.vertices.append(Vertex(18, (Terrain.WHEAT, Terrain.WHEAT, Terrain.WOOD,), (9, 12, 11)))
-    board.vertices.append(Vertex(19, (Terrain.WHEAT, Terrain.WOOD, Terrain.BRICK,), (12, 11, 6)))
-    board.vertices.append(Vertex(20, (Terrain.WOOD, Terrain.BRICK,), (11, 6)))
-    board.vertices.append(Vertex(21, (Terrain.BRICK, Terrain.SHEEPS,), (6, 4)))
-    board.vertices.append(Vertex(22, (Terrain.SHEEPS, Terrain.WOOD,), (4, 3)))
-    board.vertices.append(Vertex(23, (Terrain.SHEEPS, Terrain.WOOD, Terrain.BRICK,), (4, 3, 10)))
-    board.vertices.append(Vertex(24, (Terrain.WOOD, Terrain.BRICK, Terrain.ORE,), (3, 10, 8)))
-    board.vertices.append(Vertex(25, (Terrain.BRICK, Terrain.ORE,), (10, 8)))
-    board.vertices.append(Vertex(26, (Terrain.ORE,), (8,), Port(Terrain.ANY, 3)))
-
-
-
-    board.vertices.append(Vertex(27, (Terrain.WHEAT,), (9,)))
-    board.vertices.append(Vertex(28, (Terrain.WHEAT, Terrain.WOOD,), (9, 8,), Port(Terrain.BRICK, 2)))
-    board.vertices.append(Vertex(29, (Terrain.WHEAT, Terrain.WOOD, Terrain.WOOD,), (9, 8, 11)))
-    board.vertices.append(Vertex(30, (Terrain.WOOD, Terrain.WOOD, Terrain.ORE,), (8, 11, 3)))
-    board.vertices.append(Vertex(31, (Terrain.WOOD, Terrain.ORE,), (11, 3)))
-    board.vertices.append(Vertex(32, (Terrain.ORE, Terrain.WHEAT,), (3, 4)))
-    board.vertices.append(Vertex(33, (Terrain.WHEAT, Terrain.WOOD,), (4, 3)))
-    board.vertices.append(Vertex(34, (Terrain.WHEAT, Terrain.WOOD, Terrain.SHEEPS,), (4, 3, 5)))
-    board.vertices.append(Vertex(35, (Terrain.WOOD, Terrain.ORE, Terrain.SHEEPS,), (3, 8, 5)))
-    board.vertices.append(Vertex(36, (Terrain.SHEEPS, Terrain.ORE,), (5, 8)))
-    board.vertices.append(Vertex(37, (Terrain.ORE,), (8,), Port(Terrain.ORE, 2)))
-
-
-    board.vertices.append(Vertex(38, (Terrain.WOOD,), (8,), Port(Terrain.WOOD, 2)))
-    board.vertices.append(Vertex(39, (Terrain.WOOD, Terrain.BRICK,), (8, 5)))
-    board.vertices.append(Vertex(40, (Terrain.WOOD, Terrain.BRICK, Terrain.ORE,), (8, 5, 3)))
-    board.vertices.append(Vertex(41, (Terrain.BRICK, Terrain.ORE, Terrain.WHEAT,), (5, 3, 6)))
-    board.vertices.append(Vertex(42, (Terrain.ORE, Terrain.WHEAT, Terrain.WHEAT,), (3, 6, 4)))
-    board.vertices.append(Vertex(43, (Terrain.WHEAT, Terrain.WHEAT, Terrain.SHEEPS,), (6, 4, 11)))
-    board.vertices.append(Vertex(44, (Terrain.WHEAT, Terrain.SHEEPS, Terrain.SHEEPS,), (4, 11, 5)))
-    board.vertices.append(Vertex(45, (Terrain.SHEEPS, Terrain.SHEEPS,), (11, 5,), Port(Terrain.SHEEPS, 2)))
-    board.vertices.append(Vertex(46, (Terrain.SHEEPS,), (5,), Port(Terrain.SHEEPS, 2)))
-
-
-    board.vertices.append(Vertex(46, (Terrain.BRICK,), (5,), Port(Terrain.ANY, 3)))
-    board.vertices.append(Vertex(47, (Terrain.BRICK,), (5,), Port(Terrain.ANY, 3)))
-    board.vertices.append(Vertex(48, (Terrain.BRICK, Terrain.WHEAT,), (5, 6)))
-    board.vertices.append(Vertex(49, (Terrain.WHEAT,), (6,), Port(Terrain.ANY, 3)))
-    board.vertices.append(Vertex(50, (Terrain.WHEAT, Terrain.SHEEPS,), (6, 11,), Port(Terrain.ANY, 3)))
-    board.vertices.append(Vertex(51, (Terrain.SHEEPS,), (11,)))
-    board.vertices.append(Vertex(52, (Terrain.SHEEPS,), (11,)))
-
-
-
-
 def construct_vertices(tiles):
     global board
     board.vertices.append(Vertex(0, (tiles[0],), Port(Terrain.ANY, 3)))
@@ -380,8 +310,6 @@ def construct_edges():
 
 def construct_board(tiles=None):
     global board
-    if tiles is None:
-        default_tiles()
     construct_vertices(tiles)
     construct_edges()
     return board

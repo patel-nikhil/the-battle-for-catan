@@ -115,12 +115,16 @@ def read_layout(filename):
                 tiles[i] = Tile(resource, roll) 
             except:
                 return None
-                
+
     return tiles
 
 if __name__ == "__main__":
     #tiles = set_layout()
     tiles = read_layout("layout.txt")
+    
+    if tiles is None:
+        raise Exception("Invalid layout")
+
     board = construct_board(tiles)
 
     score = []
