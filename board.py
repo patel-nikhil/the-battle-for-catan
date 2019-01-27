@@ -38,12 +38,20 @@ players = {
 
 
 class Terrain(Enum):
-    WOOD = 0
-    BRICK = 1
-    WHEAT = 2
-    ORE = 3
-    SHEEPS = 4
-    ANY = 5
+    WOOD = 'L'
+    BRICK = 'B'
+    WHEAT = 'W'
+    ORE = 'O'
+    SHEEPS = 'S'
+    ANY = 'A'
+    NONE = 'N'
+
+class Tile:
+
+    def __init__(self, resource, roll):
+        self.resource = resource
+        self.roll = roll
+
 
 c_city = ((Terrain.ORE, 3,), (Terrain.WHEAT, 2))
 c_settlement = ((Terrain.WOOD, 1,), (Terrain.BRICK, 1,), (Terrain.WHEAT, 1,), (Terrain.SHEEPS, 1))
@@ -60,13 +68,17 @@ class Port:
 
 class Vertex:
     
-    def __init__(self, position, resources, rolls, port=None):
+    def __init__(self, position, tiles, port=None):
         self.owner = None
         self.position = position
-        self.resources = resources
-        self.paydays = rolls
+        self.resources = []
+        self.paydays = []
         self.port = port
         self.connections = []
+
+        for hex in tiles:
+            self.resources.append(hex.resource)
+            self.paydays.append(hex.roll)
 
     def add_resource(self, *resources):
         for resource in resources:
@@ -114,7 +126,7 @@ class Vertex:
 
         if secondturn == True:
             for resource in islice(Terrain, 0, 4):
-                if resource not in list(players[color].resources + self.resources):
+                if resource not in list(players[color].resources + self):
                     lvalue += 1
 
         return (dvalue, rvalue, avalue, pvalue, lvalue)
@@ -146,7 +158,7 @@ class Board:
 board = Board()
 
 
-def construct_vertices():
+def default_tiles():
     global board
     board.vertices.append(Vertex(0, (Terrain.ORE,), (10,), Port(Terrain.ANY, 3)))
     board.vertices.append(Vertex(1, (Terrain.ORE,), (10,), Port(Terrain.ANY, 3)))
@@ -212,7 +224,74 @@ def construct_vertices():
     board.vertices.append(Vertex(51, (Terrain.SHEEPS,), (11,)))
     board.vertices.append(Vertex(52, (Terrain.SHEEPS,), (11,)))
 
-    
+
+
+
+def construct_vertices(tiles):
+    global board
+    board.vertices.append(Vertex(0, (tiles[0],), Port(Terrain.ANY, 3)))
+    board.vertices.append(Vertex(1, (tiles[0],), Port(Terrain.ANY, 3)))
+    board.vertices.append(Vertex(2, (tiles[0], tiles[1])))
+    board.vertices.append(Vertex(3, (tiles[1],), Port(Terrain.WHEAT, 2)))
+    board.vertices.append(Vertex(4, (tiles[1], tiles[2]), Port(Terrain.WHEAT, 2)))
+    board.vertices.append(Vertex(5, (tiles[2],)))
+    board.vertices.append(Vertex(6, (tiles[2],)))
+    board.vertices.append(Vertex(7, (tiles[3],), Port(Terrain.WOOD, 2)))
+    board.vertices.append(Vertex(8, (tiles[0], tiles[3])))
+    board.vertices.append(Vertex(9, (tiles[0], tiles[4], tiles[3])))
+    board.vertices.append(Vertex(10, (tiles[0], tiles[1], tiles[4])))
+
+    board.vertices.append(Vertex(11, (tiles[1], tiles[4], tiles[5])))
+    board.vertices.append(Vertex(12, (tiles[1], tiles[5], tiles[2])))
+    board.vertices.append(Vertex(13, (tiles[5], tiles[2], tiles[6])))
+    board.vertices.append(Vertex(14, (tiles[2], tiles[6]), Port(Terrain.ORE, 2)))
+    board.vertices.append(Vertex(15, (tiles[0],), Port(Terrain.ORE, 2)))
+
+    board.vertices.append(Vertex(16, (tiles[7],)))
+    board.vertices.append(Vertex(17, (tiles[7], tiles[3]), Port(Terrain.WOOD, 2)))
+    board.vertices.append(Vertex(18, (tiles[7], tiles[3], tiles[8])))
+    board.vertices.append(Vertex(19, (tiles[3], tiles[8], tiles[4])))
+    board.vertices.append(Vertex(20, (tiles[8], tiles[4], tiles[9])))
+    board.vertices.append(Vertex(21, (tiles[4], tiles[5], tiles[9])))
+    board.vertices.append(Vertex(22, (tiles[5], tiles[10], tiles[9])))
+    board.vertices.append(Vertex(23, (tiles[5], tiles[10], tiles[6])))
+    board.vertices.append(Vertex(24, (tiles[10], tiles[6], tiles[11])))
+    board.vertices.append(Vertex(25, (tiles[6], tiles[11])))
+    board.vertices.append(Vertex(26, (tiles[11],), Port(Terrain.ANY, 3)))
+
+
+
+    board.vertices.append(Vertex(27, (tiles[7],)))
+    board.vertices.append(Vertex(28, (tiles[7], tiles[12]), Port(Terrain.BRICK, 2)))
+    board.vertices.append(Vertex(29, (tiles[7], tiles[12], tiles[8])))
+    board.vertices.append(Vertex(30, (tiles[12], tiles[8], tiles[13])))
+    board.vertices.append(Vertex(31, (tiles[12], tiles[13], tiles[9])))
+    board.vertices.append(Vertex(32, (tiles[10], tiles[14], tiles[9])))
+    board.vertices.append(Vertex(33, (tiles[14], tiles[10], tiles[9])))
+    board.vertices.append(Vertex(34, (tiles[14], tiles[10], tiles[15])))
+    board.vertices.append(Vertex(35, (tiles[10], tiles[11], tiles[15])))
+    board.vertices.append(Vertex(36, (tiles[15], tiles[11])))
+    board.vertices.append(Vertex(37, (tiles[11],), Port(Terrain.ORE, 2)))
+
+
+    board.vertices.append(Vertex(38, (tiles[12],), Port(Terrain.WOOD, 2)))
+    board.vertices.append(Vertex(39, (tiles[12], tiles[16])))
+    board.vertices.append(Vertex(40, (tiles[12], tiles[16], tiles[13])))
+    board.vertices.append(Vertex(41, (tiles[16], tiles[13], tiles[17])))
+    board.vertices.append(Vertex(42, (tiles[13], tiles[17], tiles[14])))
+    board.vertices.append(Vertex(43, (tiles[17], tiles[14], tiles[18])))
+    board.vertices.append(Vertex(44, (tiles[14], tiles[18], tiles[15])))
+    board.vertices.append(Vertex(45, (tiles[18], tiles[15]), Port(Terrain.SHEEPS, 2)))
+    board.vertices.append(Vertex(46, (tiles[18],), Port(Terrain.SHEEPS, 2)))
+
+
+    board.vertices.append(Vertex(46, (tiles[16],), Port(Terrain.ANY, 3)))
+    board.vertices.append(Vertex(47, (tiles[16],), Port(Terrain.ANY, 3)))
+    board.vertices.append(Vertex(48, (tiles[16], tiles[17])))
+    board.vertices.append(Vertex(49, (tiles[17],), Port(Terrain.ANY, 3)))
+    board.vertices.append(Vertex(50, (tiles[17], tiles[18]), Port(Terrain.ANY, 3)))
+    board.vertices.append(Vertex(51, (tiles[18],)))
+    board.vertices.append(Vertex(52, (tiles[18],)))
 
 def append(first, second):
     global board
@@ -299,9 +378,11 @@ def construct_edges():
     append(50,51)
     append(51,52)
 
-def construct_board():
+def construct_board(tiles=None):
     global board
-    construct_vertices()
+    if tiles is None:
+        default_tiles()
+    construct_vertices(tiles)
     construct_edges()
     return board
 
