@@ -170,8 +170,12 @@ if __name__ == "__main__":
     players['WHITE'].add_vertex(score[0][0])
 
     score = evaluate('WHITE', True)
-    players['WHITE'].add_vertex(score[0][0])
+    players['WHITE'].add_vertex(score[0][0], True)
     score = evaluate('BLUE', True)
-    players['BLUE'].add_vertex(score[0][0])
+    players['BLUE'].add_vertex(score[0][0], True)
     score = evaluate('RED', True)
-    players['RED'].add_vertex(score[0][0])
+    players['RED'].add_vertex(score[0][0], True)
+
+    print(players['WHITE'].cards)
+    print(players['RED'].cards)
+    print(players['BLUE'].cards)

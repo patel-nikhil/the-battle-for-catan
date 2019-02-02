@@ -22,11 +22,13 @@ class Player():
         self.resources = []
         self.port_resources = []
     
-    def add_vertex(self, position):
+    def add_vertex(self, position, starting_resource=False):
         self.vertices.append(position)
         board.vertices[position].owner = self.color
         for resource in board.vertices[position].resources:
             self.resources.append(resource)
+            if starting_resource == True:
+                self.cards.append(resource)
         if board.vertices[position].port is not None:
             self.port_resources.append(board.vertices[position].port.resource)
 
