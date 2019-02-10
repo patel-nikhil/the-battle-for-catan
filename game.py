@@ -1,57 +1,7 @@
 import os
 from board import *
-
-
-# Find spots where roads can be built
-# Can probably optimize by searching from starting settlements outwards?
-def find_road_spot(board, color):
-    if players[color].roads == 0:
-        return
-    
-    available = []
-    for place in board.vertices:
-        if place.owner not in (None, color) or color not in place.colours:
-            continue
-        
-        for adj in place.connections:
-            if adj[1] == None:
-                available.append(place.position, adj.position)
-    
-    return available
-
-# Find spots where settlements can be built
-def find_settlement_spot(board, color):
-    if players[color].settlements == 0:
-        return
-
-    available = []
-    for place in board.vertices:
-        if place.owner is not None:
-            continue
-        
-        connected = False
-        is_far_enough = True
-        for adj in place.connections:
-            if adj[0].owner is not None:
-                is_far_enough = False
-                break
-            if adj[1] == color:
-                connected = True
-
-        if is_far_enough == True and connected == True:
-            available.append(place)
-    
-    return available
-
-# Find spots where cities can be built
-def find_city_spot(board, color):
-    if players[color].cities == 0:
-        return
-
-    available = []
-    for place in board.vertices:
-        if place.owner == color and place.level == 1:
-            available.append(place)
+from objectives import *
+import random
 
 
 def set_layout():
@@ -147,9 +97,26 @@ def evaluate(color, secondturn=False):
         for each in score[:3]:
             out.write(str(each))
             out.write(os.linesep)
-            print(each)
+            # print(each)
         out.write(os.linesep)
     return score
+
+
+def drop(turn, num_cards):
+    pass
+
+
+def roll(turn):
+    dice = random.randint(1,12)
+    print(dice)
+    if dice == 7:
+        for player in players.values():
+            if len(player.hand) > 8:
+                drop(turn, players.get(turn).cards/2)
+    else:
+        for player in players.values():
+            for position in player.vertices:
+                player.hand += [board.vertices[position].resources[i] for i, x in enumerate(board.vertices[position].paydays) if x == dice]
 
 
 if __name__ == "__main__":
@@ -176,6 +143,17 @@ if __name__ == "__main__":
     score = evaluate('RED', True)
     players['RED'].add_vertex(score[0][0], True)
 
-    print(players['WHITE'].cards)
-    print(players['RED'].cards)
-    print(players['BLUE'].cards)
+    print(players['WHITE'].hand)
+    print(players['RED'].hand)
+    print(players['BLUE'].hand)
+
+    roll(0)
+    print(players['RED'].vertices)
+    print(find_road_spot(board, 'RED'))
+    print(find_settlement_spot(board, 'RED'))
+    score = evaluate('RED')
+    #obj = turn_objectives(turn_order[0])
+
+    #find_road_spot(board, turn_order[0])
+    #find_settlement_spot(board, turn_order[0])
+    #find_city_spot(board, turn_order[0])

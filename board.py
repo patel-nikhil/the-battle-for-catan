@@ -18,24 +18,42 @@ class Player():
         self.settlements = 5
         self.cities = 4
         self.cards = []
+        self.hand = []
         self.vertices = []
         self.resources = []
         self.port_resources = []
     
     def add_vertex(self, position, starting_resource=False):
+        self.settlements -= 1
         self.vertices.append(position)
         board.vertices[position].owner = self.color
+        board.vertices[position].colors.append(self.color)
         for resource in board.vertices[position].resources:
             self.resources.append(resource)
             if starting_resource == True:
-                self.cards.append(resource)
+                self.hand.append(resource)
         if board.vertices[position].port is not None:
             self.port_resources.append(board.vertices[position].port.resource)
+    
+    def add_road(self, start_vertex, end_vertex):
+        self.roads -= 1
+        start = board.vertices.index(start_vertex)
+        end = board.vertices.index(end_vertex)
+        
+        board.vertices[start].connections[end][1] = self.color
+        board.vertices[end].connections[start][1] = self.color
+        board.vertices[start].colors.append(self.color)
+        board.vertices[end].colors.append(self.color)
+
+class Buildings(Enum):
+    city = 'city'
+    road = 'road'
+    settlement = 'settlement'
 
 players = {
-    'RED' : Player(Color.RED,),
-    'BLUE': Player(Color.BLUE,),
-    'WHITE': Player(Color.WHITE,),
+    'RED' : Player(Color.RED),
+    'BLUE': Player(Color.BLUE),
+    'WHITE': Player(Color.WHITE),
     'ORANGE': Player(Color.ORANGE)
 }
 
@@ -79,6 +97,7 @@ class Vertex:
         self.paydays = []
         self.port = port
         self.connections = []
+        self.colors = []
 
         for hex in tiles:
             self.resources.append(hex.resource)
@@ -236,8 +255,8 @@ def construct_vertices(tiles, ports):
 
 def append(first, second):
     global board
-    board.vertices[first].connections.append((board.vertices[second], None))
-    board.vertices[second].connections.append((board.vertices[first], None))
+    board.vertices[first].connections.append([board.vertices[second], None])
+    board.vertices[second].connections.append([board.vertices[first], None])
 
 def construct_edges():
     global board
