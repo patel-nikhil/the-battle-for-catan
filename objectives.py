@@ -18,6 +18,32 @@ def find_road_spot(board, color):
     
     return available
 
+
+# Find spots where settlements can be built
+def find_target_settlement(board, start, color):
+    if players[color].settlements == 0:
+        return [-1]*54
+
+    distanceTo = [0]*54
+    source = board.vertices[start]
+    visited = [source.position]
+    queue = [source]
+    while len(queue) > 0:
+        current = queue.pop()
+        if current.owner not in (None, Color[color]):
+            continue
+        for dest in current.connections:
+            # print('Position:', dest[0].position)
+            if distanceTo[dest[0].position] > distanceTo[current.position] + 1 or (distanceTo[dest[0].position] == 0 and dest[0].position != start):
+                # print('weight', distanceTo[current.position] + 1)
+                distanceTo[dest[0].position] = distanceTo[current.position] + 1
+            if dest[0].position not in visited:
+                queue.append(dest[0])
+                visited.append(dest[0].position)
+    return distanceTo
+
+
+
 # Find spots where settlements can be built
 def find_settlement_spot(board, color):
     if players[color].settlements == 0:

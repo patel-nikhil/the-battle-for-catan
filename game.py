@@ -131,6 +131,8 @@ if __name__ == "__main__":
 
     score = evaluate('RED')
     players['RED'].add_vertex(score[0][0])
+    print(score[0][0])
+    print(find_target_settlement(board,score[0][0],'RED'))
     score = evaluate('BLUE')
     players['BLUE'].add_vertex(score[0][0])
     score = evaluate('WHITE')
