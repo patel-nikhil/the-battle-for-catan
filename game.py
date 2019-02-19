@@ -119,6 +119,21 @@ def roll(turn):
                 player.hand += [board.vertices[position].resources[i] for i, x in enumerate(board.vertices[position].paydays) if x == dice]
 
 
+def place_starting_settlement(board, turn, colour, secondTurn=False):
+    score = evaluate(colour)
+    players[colour].add_vertex(score[0][0],secondTurn)
+    distance = shortest_path(board,score[0][0],colour)
+    
+    for pt in score[5-turn:]:
+        if distance[0][pt[0]] < 5 and distance[0][pt[0]] > 1:
+            break
+    index = distance[1][pt[0]]
+    while distance[1][index] != score[0][0]:
+        index = distance[1][index]
+
+    players[colour].add_road(score[0][0], index)
+
+
 if __name__ == "__main__":
     turn_order = ['RED', 'BLUE', 'WHITE']
     #tiles = set_layout()
@@ -129,21 +144,13 @@ if __name__ == "__main__":
 
     board = construct_board(tiles, ports)
 
-    score = evaluate('RED')
-    players['RED'].add_vertex(score[0][0])
-    print(score[0][0])
-    print(find_target_settlement(board,score[0][0],'RED'))
-    score = evaluate('BLUE')
-    players['BLUE'].add_vertex(score[0][0])
-    score = evaluate('WHITE')
-    players['WHITE'].add_vertex(score[0][0])
+    place_starting_settlement(board, 0, 'RED')
+    place_starting_settlement(board, 1, 'BLUE')
+    place_starting_settlement(board, 2, 'WHITE')
 
-    score = evaluate('WHITE', True)
-    players['WHITE'].add_vertex(score[0][0], True)
-    score = evaluate('BLUE', True)
-    players['BLUE'].add_vertex(score[0][0], True)
-    score = evaluate('RED', True)
-    players['RED'].add_vertex(score[0][0], True)
+    place_starting_settlement(board, 3, 'WHITE', True)
+    place_starting_settlement(board, 4, 'BLUE', True)
+    place_starting_settlement(board, 5, 'RED', True)
 
     print(players['WHITE'].hand)
     print(players['RED'].hand)
@@ -154,6 +161,7 @@ if __name__ == "__main__":
     print(find_road_spot(board, 'RED'))
     print(find_settlement_spot(board, 'RED'))
     score = evaluate('RED')
+    print(score)
     #obj = turn_objectives(turn_order[0])
 
     #find_road_spot(board, turn_order[0])

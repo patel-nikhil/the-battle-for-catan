@@ -3,16 +3,25 @@ from itertools import islice
 
 from stats import *
 
-class Color(Enum):
+class Colour(Enum):
     RED = 0,
     BLUE = 1,
     WHITE = 2,
     ORANGE = 3
 
+class Connection:
+    
+    def __init__(self, vertex, colour):
+        self.vertex = vertex
+        self.colour = colour
+
+    def __eq__(self, other):
+        return self.vertex == other.vertex
+
 class Player():
 
-    def __init__(self, color):
-        self.color = color
+    def __init__(self, colour):
+        self.colour = colour
         self.vp = 0
         self.roads = 15
         self.settlements = 5
@@ -26,8 +35,8 @@ class Player():
     def add_vertex(self, position, starting_resource=False):
         self.settlements -= 1
         self.vertices.append(position)
-        board.vertices[position].owner = self.color
-        board.vertices[position].colors.append(self.color)
+        board.vertices[position].owner = self.colour
+        board.vertices[position].colours.append(self.colour)
         for resource in board.vertices[position].resources:
             self.resources.append(resource)
             if starting_resource == True:
@@ -35,15 +44,13 @@ class Player():
         if board.vertices[position].port is not None:
             self.port_resources.append(board.vertices[position].port.resource)
     
-    def add_road(self, start_vertex, end_vertex):
+    def add_road(self, start, end):
         self.roads -= 1
-        start = board.vertices.index(start_vertex)
-        end = board.vertices.index(end_vertex)
         
-        board.vertices[start].connections[end][1] = self.color
-        board.vertices[end].connections[start][1] = self.color
-        board.vertices[start].colors.append(self.color)
-        board.vertices[end].colors.append(self.color)
+        board.vertices[start].connections[end].colour = self.colour # = Connection(board.vertices[end], self.colour)
+        board.vertices[end].connections[start].colour = self.colour # = Connection(board.vertices[start], self.colour)
+        board.vertices[start].colours.append(self.colour)
+        board.vertices[end].colours.append(self.colour)
 
 class Buildings(Enum):
     city = 'city'
@@ -51,10 +58,10 @@ class Buildings(Enum):
     settlement = 'settlement'
 
 players = {
-    'RED' : Player(Color.RED),
-    'BLUE': Player(Color.BLUE),
-    'WHITE': Player(Color.WHITE),
-    'ORANGE': Player(Color.ORANGE)
+    'RED' : Player(Colour.RED),
+    'BLUE': Player(Colour.BLUE),
+    'WHITE': Player(Colour.WHITE),
+    'ORANGE': Player(Colour.ORANGE)
 }
 
 
@@ -96,12 +103,15 @@ class Vertex:
         self.resources = []
         self.paydays = []
         self.port = port
-        self.connections = []
-        self.colors = []
+        self.connections = {}
+        self.colours = []
 
         for hex in tiles:
             self.resources.append(hex.resource)
             self.paydays.append(hex.roll)
+
+    def __eq__(self, other):
+        return self.position == other.position
 
     def add_resource(self, *resources):
         for resource in resources:
@@ -114,14 +124,14 @@ class Vertex:
     def add_port(self, port):
         self.port = port
 
-    def build(self, color):
-        self.owner = color
+    def build(self, colour):
+        self.owner = colour
 
     def reset(self):
         self.owner = None
     
     # Factor in potential riskiness of having settlements on same number/resource
-    def value(self, color, secondturn=False):
+    def value(self, colour, secondturn=False):
         dvalue = 0
         for roll in self.paydays:
             dvalue += p_roll[roll]
@@ -134,29 +144,29 @@ class Vertex:
         if self.owner is not None:
             return (0, 0, 0, 0, 1)
         
-        for adj in self.connections:
-            if adj[0].owner is not None:
+        for adj in self.connections.values():
+            if adj.vertex.owner is not None:
                 return (0, 0, 0, 0, 1)
 
         for resource in self.resources:
-            if resource not in players[color].resources:
+            if resource not in players[colour].resources:
                 rvalue += 1
-            if resource in players[color].resources:
+            if resource in players[colour].resources:
                 avalue += 1
             if self.port is not None and resource == self.port.resource:
                 pvalue += 1
         
-        for resource in set(players[color].resources + list(self.resources)):
-            if resource in players[color].port_resources:
-                if players[color].resources.count(resource) > 1:
+        for resource in set(players[colour].resources + list(self.resources)):
+            if resource in players[colour].port_resources:
+                if players[colour].resources.count(resource) > 1:
                     pvalue += 3
             else:
-                if players[color].port_resources.count(Terrain.ANY) and players[color].resources.count(resource) > 2:
+                if players[colour].port_resources.count(Terrain.ANY) and players[colour].resources.count(resource) > 2:
                     pvalue += 2
 
         if secondturn == True:
             for resource in islice(Terrain, 0, 4):
-                if resource not in list(players[color].resources + self.resources):
+                if resource not in list(players[colour].resources + self.resources):
                     lvalue += 0.03
 
         return (dvalue, rvalue, avalue, pvalue, lvalue)
@@ -169,13 +179,13 @@ class Edge:
     def __init__(self, start, end):
         self.start = start
         self.end = end
-        self.color = None
+        self.colour = None
 
-    def set_color(self, color):
-        self.color = color
+    def set_colour(self, colour):
+        self.colour = colour
 
     def reset(self):
-        self.color = None
+        self.colour = None
 
 
 ## Board has 19 tiles, one of which is a desert tile
@@ -255,8 +265,8 @@ def construct_vertices(tiles, ports):
 
 def append(first, second):
     global board
-    board.vertices[first].connections.append([board.vertices[second], None])
-    board.vertices[second].connections.append([board.vertices[first], None])
+    board.vertices[first].connections[second] = Connection(board.vertices[second], None)
+    board.vertices[second].connections[first] = Connection(board.vertices[first], None)
 
 def construct_edges():
     global board

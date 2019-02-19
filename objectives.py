@@ -3,50 +3,52 @@ from board import *
 
 # Find spots where roads can be built
 # Can probably optimize by searching from starting settlements outwards?
-def find_road_spot(board, color):
-    if players[color].roads == 0:
+def find_road_spot(board, colour):
+    if players[colour].roads == 0:
         return []
     
     available = []
     for place in board.vertices:
-        if place.owner not in (None, Color[color]) or Color[color] not in place.colors:
+        if place.owner not in (None, Colour[colour]) or Colour[colour] not in place.colours:
             continue
         
-        for adj in place.connections:
-            if adj[1] == None:
-                available.append((place.position, adj[0].position))
+        for adj in place.connections.values():
+            if adj.colour == None:
+                available.append((place.position, adj.vertex.position))
     
     return available
 
 
 # Find spots where settlements can be built
-def find_target_settlement(board, start, color):
-    if players[color].settlements == 0:
+def shortest_path(board, start, colour):
+    if players[colour].settlements == 0:
         return [-1]*54
 
     distanceTo = [0]*54
     source = board.vertices[start]
     visited = [source.position]
     queue = [source]
+    path = [0]*54; path[source.position] = source.position
     while len(queue) > 0:
         current = queue.pop()
-        if current.owner not in (None, Color[color]):
+        if current.owner not in (None, Colour[colour]):
             continue
-        for dest in current.connections:
+        for dest in current.connections.values():
             # print('Position:', dest[0].position)
-            if distanceTo[dest[0].position] > distanceTo[current.position] + 1 or (distanceTo[dest[0].position] == 0 and dest[0].position != start):
+            if distanceTo[dest.vertex.position] > distanceTo[current.position] + 1 or (distanceTo[dest.vertex.position] == 0 and dest.vertex.position != start):
                 # print('weight', distanceTo[current.position] + 1)
-                distanceTo[dest[0].position] = distanceTo[current.position] + 1
-            if dest[0].position not in visited:
-                queue.append(dest[0])
-                visited.append(dest[0].position)
-    return distanceTo
+                distanceTo[dest.vertex.position] = distanceTo[current.position] + 1
+                path[dest.vertex.position] = current.position
+            if dest.vertex.position not in visited:
+                queue.append(dest.vertex)
+                visited.append(dest.vertex.position)
+    return [distanceTo, path]
 
 
 
 # Find spots where settlements can be built
-def find_settlement_spot(board, color):
-    if players[color].settlements == 0:
+def find_settlement_spot(board, colour):
+    if players[colour].settlements == 0:
         return []
 
     available = []
@@ -56,11 +58,11 @@ def find_settlement_spot(board, color):
         
         connected = False
         is_far_enough = True
-        for adj in place.connections:
-            if adj[0].owner is not None:
+        for adj in place.connections.values():
+            if adj.vertex.owner is not None:
                 is_far_enough = False
                 break
-            if adj[1] == color:
+            if adj.colour == colour:
                 connected = True
 
         if is_far_enough == True and connected == True:
@@ -69,13 +71,13 @@ def find_settlement_spot(board, color):
     return available
 
 # Find spots where cities can be built
-def find_city_spot(board, color):
-    if players[color].cities == 0:
+def find_city_spot(board, colour):
+    if players[colour].cities == 0:
         return []
 
     available = []
     for place in board.vertices:
-        if place.owner == color and place.level == 1:
+        if place.owner == colour and place.level == 1:
             available.append(place)
     return available
 
@@ -88,15 +90,15 @@ def get_longest_road(player):
 def get_knight(player):
     pass
 
-def turn_objectives(board, color):
-    player = players[color]
+def turn_objectives(board, colour):
+    player = players[colour]
     vp = player.vp
     
     objectives = ['city', 'settlement', 'road', 'card']
     
-    cities = find_city_spot(board, color)
-    settlements = find_settlement_spot(board, color)
-    roads = find_road_spot(board, color)
+    cities = find_city_spot(board, colour)
+    settlements = find_settlement_spot(board, colour)
+    roads = find_road_spot(board, colour)
 
     if cities == []:
         objectives.remove('city')
