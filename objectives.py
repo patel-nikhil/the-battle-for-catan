@@ -81,7 +81,10 @@ def find_city_spot(board, colour):
             available.append(place)
     return available
 
-def can_win(player):
+def can_build(player):
+    pass
+
+def can_win(player, cities, settlements, roads):
     pass
 
 def get_longest_road(player):
@@ -107,16 +110,41 @@ def turn_objectives(board, colour):
        objectives.remove('settlement')
 
     if roads == []:
-        objectives.remove('roads')
+        objectives.remove('road')
+    
+    missing = {}
+    trading = {}
+    for btype in objectives:
+        for resource in building_types[btype].keys():
+            needed = building_types[btype][resource] - players[colour].hand.count(resource)
+            if needed <= 0:
+                continue
+            else:
+                try:
+                    missing[btype] += [resource, needed]
+                except KeyError:
+                    missing[btype] = [resource, needed]
+        for resource in players[colour].hand:
+            try:
+                extra = players[colour].hand.count(resource) - building_types[btype][resource]
+                if extra <= 0:
+                    continue
+                trading[btype] += [resource, extra]
+            except KeyError:
+                try:
+                    trading[btype] = [resource, players[colour].hand.count(resource) - building_types[btype][resource]]
+                except KeyError:
+                    trading[btype] = [resource, players[colour].hand.count(resource)]
 
     best_move = can_win(player, cities, settlements, roads)
     time_to_win = ttw(player, cities, settlements, roads)
 
+    return None
 
 # Find time to win for each player
 def ttw(player, cities, settlements, roads):
     ttw = 1
-    if player.vp == 9 or player.vp + player.cards == 9:
+    if player.vp == 9 or player.vp + len(player.cards) == 9:
         if len(cities) + len(settlements) == 0:
             ttw += 0.5
         if not(get_longest_road(player)):

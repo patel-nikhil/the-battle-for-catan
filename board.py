@@ -80,11 +80,12 @@ class Tile:
         self.resource = resource
         self.roll = roll
 
-
-c_city = ((Terrain.ORE, 3,), (Terrain.WHEAT, 2))
-c_settlement = ((Terrain.WOOD, 1,), (Terrain.BRICK, 1,), (Terrain.WHEAT, 1,), (Terrain.SHEEPS, 1))
-c_devcard = ((Terrain.ORE, 1,), (Terrain.WHEAT, 1,), (Terrain.SHEEPS, 1))
-c_road = ((Terrain.WOOD, 1,), (Terrain.BRICK, 1))
+building_types = {
+    'city' : {Terrain.ORE : 3, Terrain.WHEAT : 2},
+    'settlement' : {Terrain.WOOD : 1, Terrain.BRICK : 1, Terrain.WHEAT : 1, Terrain.SHEEPS : 1},
+    'card' : {Terrain.ORE : 1, Terrain.WHEAT : 1, Terrain.SHEEPS : 1},
+    'road' : {Terrain.WOOD : 1, Terrain.BRICK : 1}
+}
 
 num_tiles = 19
 num_ports = 9

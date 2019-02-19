@@ -152,18 +152,14 @@ if __name__ == "__main__":
     place_starting_settlement(board, 4, 'BLUE', True)
     place_starting_settlement(board, 5, 'RED', True)
 
-    print(players['WHITE'].hand)
     print(players['RED'].hand)
+    print(players['WHITE'].hand)
     print(players['BLUE'].hand)
 
     roll(0)
-    print(players['RED'].vertices)
-    print(find_road_spot(board, 'RED'))
-    print(find_settlement_spot(board, 'RED'))
+    print('owned', players['RED'].vertices)
+    print('roads', find_road_spot(board, 'RED'))
+    print('settlement', find_settlement_spot(board, 'RED'))
     score = evaluate('RED')
-    print(score)
-    #obj = turn_objectives(turn_order[0])
 
-    #find_road_spot(board, turn_order[0])
-    #find_settlement_spot(board, turn_order[0])
-    #find_city_spot(board, turn_order[0])
+    obj = turn_objectives(board, turn_order[0])
