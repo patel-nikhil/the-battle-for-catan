@@ -87,10 +87,10 @@ def read_layout(filename):
 def evaluate(color, secondturn=False):
     score = []
     for i in range(54):
-        pts = board.vertices[i].value(color, secondturn)
+        value = board.vertices[i].value(color, secondturn)
         # value = pts[0]/36.0 * sum(pts[1:-1]) - pts[0]/36.0 * pts[-1] ** 0.75
-        value = (pts[0]/36.0 * sum(pts[1:-1]))/pts[-1]
-        score.append((i, value, pts))
+        # value = (pts[0]/36.0 * sum(pts[1:-1]))/pts[-1]
+        score.append((i, value))
         
     score.sort(key=lambda x: x[1], reverse=True)
     with open('scoring.txt', 'a+') as out:
@@ -121,6 +121,7 @@ def roll(turn):
 
 def place_starting_settlement(board, turn, colour, secondTurn=False):
     score = evaluate(colour)
+    print(score[0][0])
     players[colour].add_vertex(score[0][0],secondTurn)
     distance = shortest_path(board,score[0][0],colour)
     
@@ -160,6 +161,7 @@ if __name__ == "__main__":
     print('owned', players['RED'].vertices)
     print('roads', find_road_spot(board, 'RED'))
     print('settlement', find_settlement_spot(board, 'RED'))
+    print('city', find_city_spot(board, 'RED'))
     score = evaluate('RED')
 
     obj = turn_objectives(board, turn_order[0])

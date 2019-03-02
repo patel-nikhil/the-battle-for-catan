@@ -81,6 +81,58 @@ def find_city_spot(board, colour):
             available.append(place)
     return available
 
+# Calculate value of placing a city
+# Not including chance of winning
+def value_of_city(player):
+    if player.cities == 0:
+        return 0
+
+    count = 0
+    double = 0
+    position = 0
+    probabilities = []
+    for position in player.vertices:
+        count = 0
+        double = 0
+        if position.level == 1:
+            count += 1
+        else:
+            count += 0.1
+        if len(position.paydays) > len(set(position.paydays)):
+            double += 1
+        if len(position.resources) > len(set(position.resources)):
+            double += 1
+        probabilities = sum([p_roll[x]/36 for x in position.paydays])
+        value += (count + double * 2) * (1.0/(1-probabilities))
+    return value
+
+# Calculate objective value of placing a settlement
+# Not including chance of winning
+def value_of_settlement(board, player):
+    if player.settlements == 0:
+        return 0
+
+    value = 0
+    for position in find_settlement_spot(board, player):
+        value = position.value(player.colour) ** 0.65
+        for opponent in players:
+            if opponent == player:
+                continue
+            value += position.value(opponent.colour) ** 0.45
+    return value
+
+# Calculate objective value of placing a settlement
+# Not including chance of winning
+def value_of_road(board, player):
+    if player.roads == 0:
+        return 0
+    value = 0
+
+    
+
+
+    return value
+
 def can_build(player):
     pass
 

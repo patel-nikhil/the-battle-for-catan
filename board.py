@@ -1,4 +1,5 @@
 from enum import Enum
+from collections import Counter
 from itertools import islice
 
 from stats import *
@@ -81,10 +82,10 @@ class Tile:
         self.roll = roll
 
 building_types = {
-    'city' : {Terrain.ORE : 3, Terrain.WHEAT : 2},
-    'settlement' : {Terrain.WOOD : 1, Terrain.BRICK : 1, Terrain.WHEAT : 1, Terrain.SHEEPS : 1},
-    'card' : {Terrain.ORE : 1, Terrain.WHEAT : 1, Terrain.SHEEPS : 1},
-    'road' : {Terrain.WOOD : 1, Terrain.BRICK : 1}
+    'city' : Counter({Terrain.ORE : 3, Terrain.WHEAT : 2}),
+    'settlement' : Counter({Terrain.WOOD : 1, Terrain.BRICK : 1, Terrain.WHEAT : 1, Terrain.SHEEPS : 1}),
+    'card' : Counter({Terrain.ORE : 1, Terrain.WHEAT : 1, Terrain.SHEEPS : 1}),
+    'road' : Counter({Terrain.WOOD : 1, Terrain.BRICK : 1})
 }
 
 num_tiles = 19
@@ -143,11 +144,11 @@ class Vertex:
         lvalue = 1
         
         if self.owner is not None:
-            return (0, 0, 0, 0, 1)
+            return 0
         
         for adj in self.connections.values():
             if adj.vertex.owner is not None:
-                return (0, 0, 0, 0, 1)
+                return 0
 
         for resource in self.resources:
             if resource not in players[colour].resources:
@@ -170,9 +171,8 @@ class Vertex:
                 if resource not in list(players[colour].resources + self.resources):
                     lvalue += 0.03
 
-        return (dvalue, rvalue, avalue, pvalue, lvalue)
-        
-
+        #return (dvalue, rvalue, avalue, pvalue, lvalue)
+        return (dvalue/36.0 * (rvalue + avalue + pvalue))/lvalue 
 
 
 class Edge:
